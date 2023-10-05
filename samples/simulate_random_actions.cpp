@@ -19,6 +19,7 @@ void simulate_random_actions() {
     // Simulate plant growth
     if (random_action(plant_growth_probability)) {
         std::cout << "Plant grows.\n";
+
     } else {
         std::cout << "Plant does not grow.\n";
     }
