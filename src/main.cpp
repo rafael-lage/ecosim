@@ -23,6 +23,7 @@ const double HERBIVORE_MOVE_PROBABILITY = 0.7;
 const double HERBIVORE_EAT_PROBABILITY = 0.9;
 const double CARNIVORE_MOVE_PROBABILITY = 0.5;
 const double CARNIVORE_EAT_PROBABILITY = 1.0;
+const double ENTITY_CREATE_PROBABILITY = 0.01;
 
 // Type definitions
 enum entity_type_t
@@ -49,8 +50,6 @@ struct entity_t
 //prototipos
 void initilize_entity (entity_t entity, int total_ent);
 bool isNoEntitity(pos_t pos);
-bool finishedInitEnt(int total, int actual_number);
-bool tryRandomPossibility(entity_t entity);
 
 
 // Function to generate a random action based on probability
@@ -164,27 +163,22 @@ int main()
 
 
 void initilize_entity (entity_t entity, int total_ent){
-    int count = 0;
-    while(count < total_ent){
+    int num_ent = 0;
+    while(num_ent < total_ent){
         pos_t current_pos;
         for(int i = 0; i< NUM_ROWS;i ++){
             for(int j = 0; j < NUM_ROWS;j++){
                 current_pos.i = i;
                 current_pos.j = j;
-                if(isNoEntitity(current_pos) && finishedInitEnt(count,total_ent)){
-                    if(random_action(random_number()) && finishedInitEnt(count,total_ent)){
+                if(isNoEntitity(current_pos) && num_ent < total_ent){
+                    if(random_action(ENTITY_CREATE_PROBABILITY) && num_ent < total_ent){
                         entity_grid[current_pos.i][current_pos.j] = entity;
-                        count++;
+                        num_ent++;
                     }
                 }
             }  
         }
     }
-}
-
-bool finishedInitEnt(int total, int actual_number){
-    if(actual_number < total) return (true);
-    else return(false);
 }
 
 bool isNoEntitity(pos_t pos){
