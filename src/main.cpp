@@ -60,6 +60,7 @@ void cleanPosition(pos_t pos);
 bool isToGrow();
 pos_t chooseRandomPos(pos_t pos);
 void createEntity(entity_t entity, pos_t pos);
+bool isValid(pos_t pos);
 
 // Function to generate a random action based on probability
 bool random_action(float probability) {
@@ -216,6 +217,10 @@ void initilize_entity (entity_t entity, int total_ent){
 
 bool isNoEntitity(pos_t pos){
 
+    if(!isValid(pos)){
+        return(false);
+    }
+
     if(entity_grid[pos.i][pos.j].type != empty) return(false);
 
     else return(true);
@@ -235,18 +240,21 @@ void simulate_ent(pos_t pos){
 }
 
 void simulate_plant(pos_t pos){
-    //I am a plant
-    if(isToGrow()){
+    // I am a plant
+    if (isToGrow()) {
         pos_t new_plant_pos = chooseRandomPos(pos);
-        createEntity(entity_grid[pos.i][pos.j], new_plant_pos);
+        if (isValid(new_plant_pos) && isNoEntitity(new_plant_pos)) {
+            createEntity(entity_grid[pos.i][pos.j], new_plant_pos);
+        }
     }
 
-    if(entity_grid[pos.i][pos.j].age == PLANT_MAXIMUM_AGE){
+    if (entity_grid[pos.i][pos.j].age == PLANT_MAXIMUM_AGE) {
         cleanPosition(pos);
     }
     
-    entity_grid[pos.i][pos.j].age +=1;
+    entity_grid[pos.i][pos.j].age += 1;
 }
+
 
 void simulate_herb(pos_t pos){
     //I am a herbivore
@@ -283,9 +291,13 @@ pos_t chooseRandomPos(pos_t pos){
     std::vector<int> vec_pos_i;
     std::vector<int> vec_pos_j;
 
-    for(int i = pos.i -1; i<= pos.i+1;i++){
-        for(int j = pos.j-1;j <= pos.j < pos.j+1;j++){
-            if(isNoEntitity(pos)){
+    int i_offset = pos.i - 1;
+    int j_offset = pos.j - 1;
+
+    for (int i = i_offset; i <= pos.i + 1; i++) {
+        for (int j = j_offset; j <= pos.j + 1; j++) {
+            pos_t current_pos = {i, j};
+            if (isNoEntitity(current_pos) && isValid(current_pos)) {
                 vec_pos_i.push_back(i);
                 vec_pos_j.push_back(j);
             }
@@ -296,11 +308,20 @@ pos_t chooseRandomPos(pos_t pos){
     int new_j = getRandomNumberFromVector(vec_pos_j);
 
     pos_t new_pos;
-    pos.i = new_i;
-    pos.j = new_j;
+    new_pos.i = new_i;
+    new_pos.j = new_j;
     
     return(new_pos);
 }
+
+
+bool isValid(pos_t pos){
+    if((pos.i < NUM_ROWS && pos.i >= 0) && (pos.j < NUM_ROWS && pos.j >= 0))
+        return(true);
+    else 
+        return(false);
+}
+
 
 void createEntity(entity_t entity, pos_t pos){
     entity_grid[pos.i][pos.j].type = entity.type;
