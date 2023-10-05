@@ -236,6 +236,11 @@ void simulate_ent(pos_t pos){
 
 void simulate_plant(pos_t pos){
     //I am a plant
+    if(isToGrow()){
+        pos_t new_plant_pos = chooseRandomPos(pos);
+        createEntity(entity_grid[pos.i][pos.j], new_plant_pos);
+    }
+
     if(entity_grid[pos.i][pos.j].age == PLANT_MAXIMUM_AGE){
         cleanPosition(pos);
     }
@@ -244,12 +249,7 @@ void simulate_plant(pos_t pos){
 }
 
 void simulate_herb(pos_t pos){
-    //I am a plant
-
-    if(isToGrow()){
-        pos_t new_plant_pos = chooseRandomPos(pos);
-        createEntity(entity_grid[pos.i][pos.j], new_plant_pos);
-    }
+    //I am a herbivore
 
     if(entity_grid[pos.i][pos.j].age == HERBIVORE_MAXIMUM_AGE){
         cleanPosition(pos);
